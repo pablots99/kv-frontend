@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>638272415005-odnqn8aft27epam8jpp9til4h3hlh7ge.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.638272415005-odnqn8aft27epam8jpp9til4h3hlh7ge</string>
+	<key>API_KEY</key>
+	<string>AIzaSyA_z4Tubwf2gLxvk0eCz3uKnDLOG8mtyY0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>638272415005</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.kv</string>
+	<key>PROJECT_ID</key>
+	<string>kv-backend-fba39</string>
+	<key>STORAGE_BUCKET</key>
+	<string>kv-backend-fba39.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:638272415005:ios:58f5fa43167e219f492df4</string>
+	<key>DATABASE_URL</key>
+	<string>https://kv-backend-fba39.firebaseio.com</string>
+</dict>
+</plist>
