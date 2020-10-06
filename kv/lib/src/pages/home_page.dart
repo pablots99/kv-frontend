@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:kv/src/models/product_model.dart';
 import 'package:kv/src/providers/product_provider.dart';
@@ -43,20 +44,51 @@ class HomePage extends StatelessWidget {
         onPressed: () => Navigator.pushNamed(context, 'newProduct'));
   }
 
+  Widget _showPhoto(ProductModel product) {
+    if (product.urlPhoto != null) {
+      return Container(
+        child: CachedNetworkImage(
+          imageUrl: product.urlPhoto,
+          height: 200,
+          placeholder: (context, url) => Image(
+            image: AssetImage('assets/Spinner-1s-800px.gif'),
+            height: 100,
+          ),
+        ),
+      );
+    } else {
+      return Image(
+        image: AssetImage('assets/no_image.png'),
+        height: 300.0,
+        fit: BoxFit.cover,
+      );
+    }
+  }
+
   Widget _createProductItem(ProductModel product, BuildContext context) {
     return Dismissible(
       key: UniqueKey(),
       background: Container(
         color: Colors.red,
       ),
-      child: ListTile(
-        title: Text('${product.title} - ${product.prize}'),
-        subtitle: Text('${product.id}'),
-        onTap: () =>
-            Navigator.pushNamed(context, 'product', arguments: product),
+      child: Column(
+        children: [
+          GestureDetector(
+            child: _showPhoto(product),
+            onTap: () =>
+                Navigator.pushNamed(context, 'product', arguments: product),
+          ),
+          ListTile(
+            title: Text('${product.title} - ${product.prize}'),
+            subtitle: Text('${product.id}'),
+            onTap: () =>
+                Navigator.pushNamed(context, 'product', arguments: product),
+          ),
+        ],
       ),
       onDismissed: (direction) {
         //delete product
+        //productProvider.deleteImage(product.urlPhoto);
         productProvider.deleteProduct(product.id);
       },
     );

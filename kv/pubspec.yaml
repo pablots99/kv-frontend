@@ -31,6 +31,8 @@ dependencies:
   rxdart: ^0.24.1
   http:
   image_picker:
+  mime_type:
+  cached_network_image: ^2.3.2+1
   #firebase_storage:
   #firebase_core: ^0.2.5
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kv/src/utils/utils.dart' as utils;
 import 'package:kv/src/models/product_model.dart';
 import 'package:kv/src/providers/product_provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProductPage extends StatefulWidget {
   @override
@@ -37,6 +38,7 @@ class _ProductPageState extends State<ProductPage> {
             key: formKey,
             child: Column(
               children: [
+                _showPhoto(),
                 _formName(),
                 _formPrize(),
                 _submit_button(),
@@ -46,6 +48,26 @@ class _ProductPageState extends State<ProductPage> {
         ),
       ),
     );
+  }
+
+  Widget _showPhoto() {
+    if (product.urlPhoto != null) {
+      return Container(
+        child: CachedNetworkImage(
+          imageUrl: product.urlPhoto,
+          placeholder: (context, url) => Image(
+            image: AssetImage('assets/Spinner-1s-800px.gif'),
+            height: 200,
+          ),
+        ),
+      );
+    } else {
+      return Image(
+        image: AssetImage('assets/no_image.png'),
+        height: 300.0,
+        fit: BoxFit.cover,
+      );
+    }
   }
 
   Widget _formName() {

@@ -1,4 +1,6 @@
 //import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:kv/src/models/product_model.dart';
 import 'package:image_picker/image_picker.dart';
@@ -92,32 +94,18 @@ class _NewProductPageState extends State<NewProductPage> {
     );
   }
 
-  void _submit() {
+  void _submit() async {
     if (!(formKey.currentState.validate())) {
       return;
     }
+    if (foto != null) {
+      product.urlPhoto = await productProvider.uploadImage(File(foto.path));
+    }
     formKey.currentState.save();
-    //uploadFile();
-    //product.urlPhoto = _uploadedFileURL;
     productProvider.createProduct(product);
-    Navigator.pushNamed(context, 'home', arguments: 1);
+    Navigator.pop(context, 'home');
   }
 
-/*
-  Future uploadFile() async {
-    StorageReference storageReference = FirebaseStorage.instance
-        .ref()
-        .child('products/${Path.basename(foto.path)}}');
-    StorageUploadTask uploadTask = storageReference.putFile(File(foto.path));
-    await uploadTask.onComplete;
-    print('File Uploaded');
-    storageReference.getDownloadURL().then((fileURL) {
-      setState(() {
-        _uploadedFileURL = fileURL;
-      });
-    });
-  }
-*/
   void showSnackbar(String msg, GlobalKey<ScaffoldState> mainscafoldKey) {
     final snackbar = SnackBar(
       content: Text(msg),

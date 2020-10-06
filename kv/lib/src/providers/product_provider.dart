@@ -1,7 +1,9 @@
 import 'dart:convert';
-
+import 'dart:io';
+import 'package:mime_type/mime_type.dart';
 import 'package:kv/src/models/product_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 class ProductProvider {
   final String _url = "https://kv-backend-fba39.firebaseio.com";
@@ -43,5 +45,32 @@ class ProductProvider {
     final decodedData = json.decode(resp.body);
     print(decodedData);
     return true;
+  }
+
+  Future<String> uploadImage(File image) async {
+    final url = Uri.parse(
+        'https://api.cloudinary.com/v1_1/dvs17jblc/image/upload?upload_preset=o9j8nyr5');
+    final mimeType = mime(image.path).split('/');
+
+    final imageUploadRequest = http.MultipartRequest('POST', url);
+    final file = await http.MultipartFile.fromPath('file', image.path,
+        contentType: MediaType(mimeType[0], mimeType[1]));
+    imageUploadRequest.files.add(file);
+    final streamResponse = await imageUploadRequest.send();
+    final res = await http.Response.fromStream(streamResponse);
+
+    if (res.statusCode != 200 && res.statusCode != 201) {
+      print('Algo salio mal');
+      print(res.body);
+      return null;
+    }
+    final resData = json.decode(res.body);
+    return resData['secure_url'];
+  }
+
+  Future<int> deleteImage(String path) async {
+    final url = Uri.parse(path);
+    http.delete(url);
+    return 1;
   }
 }
