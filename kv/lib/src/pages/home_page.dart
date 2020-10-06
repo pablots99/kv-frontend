@@ -1,120 +1,100 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:kv/src/models/product_model.dart';
+import 'package:kv/src/pages/chat_page.dart';
+import 'package:kv/src/pages/new_poduct_page.dart';
+import 'package:kv/src/pages/product_list_page.dart';
+import 'package:kv/src/pages/search_page.dart';
+import 'package:kv/src/pages/user_page.dart';
 import 'package:kv/src/providers/product_provider.dart';
+import 'package:kv/src/utils/utils.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final productProvider = new ProductProvider();
+
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  int _lastPageIndex = 0;
+  int _pageindex = 0;
+
   int homeArgs = 0;
+
   @override
   Widget build(BuildContext context) {
     homeArgs = ModalRoute.of(context).settings.arguments;
-    homeArgs = (homeArgs == null) ? 0 : homeArgs;
     print(homeArgs);
     return Scaffold(
       key: scaffoldKey,
-      appBar: PreferredSize(
-          preferredSize: Size.fromHeight(40), child: AppBar(title: Text('KV'))),
-      body: _ptoductList(),
-      floatingActionButton: _createButton(context),
+      body: _selectPage(_pageindex),
+      bottomNavigationBar: _bottomNavigatioBar(),
     );
   }
 
-  void showSnackbar(int n) {
-    String msg;
-    if (n == 1) {
-      msg = 'uploaded';
-    } else
-      msg = 'nose';
-    final snackbar = SnackBar(
-      content: Text(msg),
-      duration: Duration(milliseconds: 1500),
-    );
-    scaffoldKey.currentState.showSnackBar(snackbar);
-  }
-
-  Widget _createButton(BuildContext context) {
-    if (homeArgs != null && homeArgs > 1) {
-      showSnackbar(homeArgs);
-    }
-    return FloatingActionButton(
-        child: Icon(Icons.add),
-        backgroundColor: Theme.of(context).buttonColor,
-        onPressed: () => Navigator.pushNamed(context, 'newProduct'));
-  }
-
-  Widget _showPhoto(ProductModel product) {
-    if (product.urlPhoto != null) {
-      return Container(
-        child: CachedNetworkImage(
-          imageUrl: product.urlPhoto,
-          height: 200,
-          placeholder: (context, url) => Image(
-            image: AssetImage('assets/Spinner-1s-800px.gif'),
-            height: 100,
-          ),
-        ),
-      );
-    } else {
-      return Image(
-        image: AssetImage('assets/no_image.png'),
-        height: 300.0,
-        fit: BoxFit.cover,
-      );
+  Widget _selectPage(int index) {
+    switch (index) {
+      case 0:
+        return ProductListPage();
+      case 1:
+        return SearchPage();
+      case 2:
+        return null;
+      case 3:
+        return ChatPage();
+      case 4:
+        return UserPage();
+      default:
+        return ProductListPage();
     }
   }
 
-  Widget _createProductItem(ProductModel product, BuildContext context) {
-    return Dismissible(
-      key: UniqueKey(),
-      background: Container(
-        color: Colors.red,
-      ),
-      child: Column(
-        children: [
-          GestureDetector(
-            child: _showPhoto(product),
-            onTap: () =>
-                Navigator.pushNamed(context, 'product', arguments: product),
-          ),
-          ListTile(
-            title: Text('${product.title} - ${product.prize}'),
-            subtitle: Text('${product.id}'),
-            onTap: () =>
-                Navigator.pushNamed(context, 'product', arguments: product),
-          ),
-        ],
-      ),
-      onDismissed: (direction) {
-        //delete product
-        //productProvider.deleteImage(product.urlPhoto);
-        productProvider.deleteProduct(product.id);
+  Widget _bottomNavigatioBar() {
+    return BottomNavigationBar(
+      selectedItemColor: Color.fromRGBO(200, 0, 100, 1),
+      currentIndex: _pageindex,
+      unselectedIconTheme: IconThemeData(color: Colors.grey),
+      onTap: (index) {
+        setState(() {
+          _lastPageIndex = _pageindex;
+          _pageindex = index;
+          if (_pageindex == 2) {
+            Navigator.of(context).push(animatonUpRoute());
+            _pageindex = _lastPageIndex;
+          }
+        });
       },
-    );
-  }
-
-  Widget _ptoductList() {
-    return FutureBuilder(
-      future: productProvider.loadProducts(),
-      builder:
-          (BuildContext context, AsyncSnapshot<List<ProductModel>> snapshot) {
-        if (snapshot.hasData) {
-          final products = snapshot.data;
-          return ListView.builder(
-              itemCount: products.length,
-              itemBuilder: (context, i) {
-                return _createProductItem(products[i], context);
-              });
-        } else {
-          return Center(
-            child: Image(
-              image: AssetImage('assets/Spinner-1s-800px.gif'),
-              height: 130.0,
+      items: [
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
             ),
-          );
-        }
-      },
+            label: 'Home'),
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.search,
+            ),
+            label: 'Search'),
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.add,
+              color: Color.fromRGBO(200, 0, 100, 0.88),
+              size: 33,
+            ),
+            label: 'Sell'),
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.message,
+            ),
+            label: 'Chat'),
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.person,
+            ),
+            label: 'Profile'),
+      ],
     );
   }
 }

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:kv/src/block/login_block.dart';
 import 'package:kv/src/block/provider.dart';
 import 'package:kv/src/providers/user_provider.dart';
+import 'package:kv/src/providers/user_provider.dart';
 import 'package:kv/src/utils/utils.dart';
 
-class LoginPage extends StatelessWidget {
+class SignUpPage extends StatelessWidget {
   final userProvider = new UserProvider();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +47,7 @@ class LoginPage extends StatelessWidget {
             child: Column(
               children: <Widget>[
                 Text(
-                  'LogIn',
+                  'Create Account',
                   style: TextStyle(fontSize: 20.0),
                 ),
                 SizedBox(
@@ -61,8 +64,8 @@ class LoginPage extends StatelessWidget {
           ),
           SizedBox(height: 20),
           FlatButton(
-            child: Text('You don`t have an account?'),
-            onPressed: () => Navigator.pushReplacementNamed(context, 'sign_up'),
+            child: Text('You alredy have an account?'),
+            onPressed: () => Navigator.pushReplacementNamed(context, 'login'),
           ),
         ],
       ),
@@ -127,18 +130,20 @@ class LoginPage extends StatelessWidget {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0)),
             color: Theme.of(context).buttonColor,
-            onPressed: snapshot.data == 1 ? () => _login(bloc, context) : null);
+            onPressed:
+                snapshot.data == 1 ? () => _register(bloc, context) : null);
       },
     );
   }
 
-  _login(LoginBloc bloc, BuildContext context) async {
+  _register(LoginBloc bloc, BuildContext context) async {
+    //Navigator.pushReplacementNamed(context, 'home');
     Map info = await userProvider.login(bloc.email, bloc.password);
 
     if (info['ok']) {
       Navigator.pushReplacementNamed(context, 'home');
     } else {
-      showAlert(context, 'Password or Email incorrect', 'Invalid Login');
+      showAlert(context, 'Email arredy in use', 'Invalid Email');
     }
   }
 

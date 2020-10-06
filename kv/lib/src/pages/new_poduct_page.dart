@@ -25,16 +25,18 @@ class _NewProductPageState extends State<NewProductPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: AppBar(title: Text('Product'), actions: <Widget>[
-        IconButton(
-          icon: Icon(Icons.photo_size_select_actual),
-          onPressed: _selectPhoto,
-        ),
-        IconButton(
-          icon: Icon(Icons.camera_alt),
-          onPressed: _takePhoto,
-        )
-      ]),
+      appBar: PreferredSize(
+          preferredSize: Size.fromHeight(35),
+          child: AppBar(title: Text('New Product'), actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.photo_size_select_actual),
+              onPressed: _selectPhoto,
+            ),
+            IconButton(
+              icon: Icon(Icons.camera_alt),
+              onPressed: _takePhoto,
+            )
+          ])),
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(15.0),
