@@ -25,6 +25,7 @@ class UserProvider {
     if (decodedResp.containsKey('idToken')) {
       _config.token = decodedResp['idToken'];
       //guardar el token
+      _config.userId = decodedResp['localId'];
       return {'ok': true, 'token': decodedResp['idToken']};
     } else {
       return {'ok': false, 'message': decodedResp['error']['message']};

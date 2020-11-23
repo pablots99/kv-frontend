@@ -15,26 +15,29 @@ class ProductModel {
   double prize;
   bool avaliable;
   String urlPhoto;
+  String userId;
   ProductModel({
     this.id,
     this.title = '',
     this.prize = 0.0,
     this.avaliable = true,
     this.urlPhoto,
+    this.userId,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
-        id: json["id"],
-        title: json["title"],
-        prize: json["prize"].toDouble(),
-        avaliable: json["avaliable"],
-        urlPhoto: json["url_photo"],
-      );
+      id: json["id"],
+      title: json["title"],
+      prize: json["prize"].toDouble(),
+      avaliable: json["avaliable"],
+      urlPhoto: json["url_photo"],
+      userId: json["userId"]);
 
   Map<String, dynamic> toJson() => {
         "title": title,
         "prize": prize,
         "avaliable": avaliable,
         "url_photo": urlPhoto,
+        "userId": userId,
       };
 }

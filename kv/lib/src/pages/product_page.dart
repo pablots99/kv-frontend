@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kv/src/utils/utils.dart' as utils;
 import 'package:kv/src/models/product_model.dart';
-import 'package:kv/src/providers/product_provider.dart';
+import 'package:kv/src/block/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ProductPage extends StatefulWidget {
@@ -13,10 +13,11 @@ class _ProductPageState extends State<ProductPage> {
   final formKey = GlobalKey<FormState>();
 
   ProductModel product = new ProductModel();
-  final productProvider = new ProductProvider();
-
+  ProductsBloc productsBloc;
   @override
   Widget build(BuildContext context) {
+    productsBloc = Provider.productsBloc(context);
+
     final ProductModel prodData = ModalRoute.of(context).settings.arguments;
     if (prodData != null) product = prodData;
 
@@ -116,8 +117,8 @@ class _ProductPageState extends State<ProductPage> {
       return;
     }
     formKey.currentState.save();
-    productProvider.modProduct(product);
-    Navigator.pop(context);
+    productsBloc.modProduct(product);
+    Navigator.pop(context, 'home');
     showSnackbar("Success");
   }
 

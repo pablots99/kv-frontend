@@ -1,10 +1,13 @@
 //import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:kv/src/models/product_model.dart';
+import 'package:kv/src/block/provider.dart';
+
 import 'package:image_picker/image_picker.dart';
-import 'package:kv/src/providers/product_provider.dart';
+import 'package:kv/src/user_config/user_config.dart';
 import 'package:kv/src/utils/utils.dart' as utils;
 //import 'package:path/path.dart' as Path;
 
@@ -16,13 +19,17 @@ class NewProductPage extends StatefulWidget {
 class _NewProductPageState extends State<NewProductPage> {
   final formKey = GlobalKey<FormState>();
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final _config = new UserConfig();
+
   ProductModel product = new ProductModel();
-  final productProvider = new ProductProvider();
+  ProductsBloc productsBloc;
   PickedFile foto;
   String _uploadedFileURL;
 
   @override
   Widget build(BuildContext context) {
+    String userid = _config.userId;
+    productsBloc = Provider.productsBloc(context);
     return Scaffold(
       key: scaffoldKey,
       appBar: PreferredSize(
@@ -47,7 +54,7 @@ class _NewProductPageState extends State<NewProductPage> {
                 _showPhoto(),
                 _formName(),
                 _formPrize(),
-                _submit_button(),
+                _submit_button(userid),
               ],
             ),
           ),
@@ -86,25 +93,26 @@ class _NewProductPageState extends State<NewProductPage> {
     );
   }
 
-  Widget _submit_button() {
+  Widget _submit_button(String userid) {
     return RaisedButton(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Icon(Icons.arrow_forward_ios_rounded),
       onPressed: () {
-        _submit();
+        _submit(userid);
       },
     );
   }
 
-  void _submit() async {
+  void _submit(String userid) async {
     if (!(formKey.currentState.validate())) {
       return;
     }
     if (foto != null) {
-      product.urlPhoto = await productProvider.uploadImage(File(foto.path));
+      product.urlPhoto = await productsBloc.uploadPhoto(File(foto.path));
     }
+    product.userId = userid;
     formKey.currentState.save();
-    productProvider.createProduct(product);
+    productsBloc.createProduct(product);
     Navigator.pop(context, 'home');
   }
 

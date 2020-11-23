@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:kv/src/block/provider.dart';
 import 'package:kv/src/models/product_model.dart';
 import 'package:kv/src/pages/chat_page.dart';
 import 'package:kv/src/pages/new_poduct_page.dart';
@@ -15,18 +16,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final productProvider = new ProductProvider();
-
   final scaffoldKey = GlobalKey<ScaffoldState>();
   int _lastPageIndex = 0;
   int _pageindex = 0;
 
-  int homeArgs = 0;
-
   @override
   Widget build(BuildContext context) {
-    homeArgs = ModalRoute.of(context).settings.arguments;
-    print(homeArgs);
     return Scaffold(
       key: scaffoldKey,
       body: _selectPage(_pageindex),

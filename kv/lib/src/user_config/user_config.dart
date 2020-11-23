@@ -20,8 +20,16 @@ class UserConfig {
     return _prefs.getString('token') ?? '';
   }
 
+  get userId {
+    return _prefs.getString('userId') ?? '';
+  }
+
   set token(String value) {
     _prefs.setString('token', value);
+  }
+
+  set userId(String value) {
+    _prefs.setString('userId', value);
   }
 
   // GET y SET de la última página

@@ -1,14 +1,22 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:kv/src/block/provider.dart';
 import 'package:kv/src/models/product_model.dart';
-import 'package:kv/src/providers/product_provider.dart';
 
-class ProductListPage extends StatelessWidget {
-  final productProvider = new ProductProvider();
+class ProductListPage extends StatefulWidget {
+  @override
+  _ProductListPageState createState() => _ProductListPageState();
+}
+
+class _ProductListPageState extends State<ProductListPage> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
   int homeArgs = 0;
+
   @override
   Widget build(BuildContext context) {
+    final productbloc = Provider.productsBloc(context);
+    productbloc.loadProducts();
     homeArgs = ModalRoute.of(context).settings.arguments;
     homeArgs = (homeArgs == null) ? 0 : homeArgs;
     print(homeArgs);
@@ -17,7 +25,7 @@ class ProductListPage extends StatelessWidget {
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(35),
           child: AppBar(title: Text('Home'))),
-      body: _ptoductList(),
+      body: _ptoductList(productbloc),
     );
   }
 
@@ -34,77 +42,84 @@ class ProductListPage extends StatelessWidget {
     scaffoldKey.currentState.showSnackBar(snackbar);
   }
 
-  Widget _showPhoto(ProductModel product) {
+  Widget _showPhoto(ProductModel product, BuildContext context) {
     if (product.urlPhoto != null) {
       return Container(
         child: CachedNetworkImage(
           imageUrl: product.urlPhoto,
-          height: 200,
+          height: MediaQuery.of(context).size.height / 5,
           placeholder: (context, url) => Image(
             image: AssetImage('assets/Spinner-1s-800px.gif'),
-            height: 100,
+            height: MediaQuery.of(context).size.height / 5,
           ),
         ),
       );
     } else {
       return Image(
         image: AssetImage('assets/no_image.png'),
-        height: 300.0,
+        height: MediaQuery.of(context).size.height / 5,
+        width: MediaQuery.of(context).size.width / 3,
         fit: BoxFit.cover,
       );
     }
   }
 
-  Widget _createProductItem(ProductModel product, BuildContext context) {
-    return Dismissible(
-      key: UniqueKey(),
-      background: Container(
-        color: Colors.red,
-      ),
+  Widget _createProductItem(
+      ProductModel product, BuildContext context, ProductsBloc productsBloc) {
+    return Card(
       child: Column(
         children: [
+          SizedBox(height: 5),
           GestureDetector(
-            child: _showPhoto(product),
+            child: _showPhoto(product, context),
             onTap: () =>
                 Navigator.pushNamed(context, 'product', arguments: product),
           ),
           ListTile(
-            title: Text('${product.title} - ${product.prize}'),
-            subtitle: Text('${product.id}'),
+            title: Text('${product.prize} €'),
+            subtitle: Text('${product.title}'),
             onTap: () =>
                 Navigator.pushNamed(context, 'product', arguments: product),
           ),
         ],
       ),
-      onDismissed: (direction) {
-        //delete product
-        //productProvider.deleteImage(product.urlPhoto);
-        productProvider.deleteProduct(product.id);
-      },
     );
   }
 
-  Widget _ptoductList() {
-    return FutureBuilder(
-      future: productProvider.loadProducts(),
+  Widget _ptoductList(ProductsBloc productsBloc) {
+    return StreamBuilder(
+      stream: productsBloc.productStream,
       builder:
           (BuildContext context, AsyncSnapshot<List<ProductModel>> snapshot) {
         if (snapshot.hasData) {
           final products = snapshot.data;
-          return ListView.builder(
-              itemCount: products.length,
-              itemBuilder: (context, i) {
-                return _createProductItem(products[i], context);
-              });
+          return RefreshIndicator(
+            onRefresh: () {},
+            child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10.0,
+                    mainAxisSpacing: 0,
+                    childAspectRatio:
+                        MediaQuery.of(context).size.height / 1200),
+                itemCount: products.length,
+                itemBuilder: (context, i) {
+                  return _createProductItem(products[i], context, productsBloc);
+                }),
+          );
         } else {
           return Center(
             child: Image(
               image: AssetImage('assets/Spinner-1s-800px.gif'),
-              height: 130.0,
+              height: MediaQuery.of(context).size.height / 1200,
             ),
           );
         }
       },
     );
+  }
+
+  Future<void> _onRefresh(ProductsBloc productsBloc) async {
+    await productsBloc.loadProducts();
   }
 }
